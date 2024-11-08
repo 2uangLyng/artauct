@@ -48,7 +48,12 @@ function ProductThumb({ product }: { product: Product }) {
             .join(" ") || "No description available"}
         </p>
         <p className="mt-2 text-lg font-bold text-gray-900">
-          {product.price?.toLocaleString() || "No price available"} VNĐ
+          {new Intl.NumberFormat("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          })
+            .format(product.price ?? 0)
+            .replace("₫", "VNĐ")}
         </p>
       </div>
     </Link>

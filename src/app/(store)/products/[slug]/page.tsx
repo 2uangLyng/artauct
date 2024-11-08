@@ -1,3 +1,4 @@
+import AddToBasketButton from "@/components/AddToBasketButton";
 import { imageUrl } from "@/lib/imageUrl";
 import { getProductBySlug } from "@/sanity/lib/products/getProductBySlug";
 import { PortableText } from "next-sanity";
@@ -38,13 +39,21 @@ async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
           <div>
             <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
             <div className="text-xl font-semibold mb-4">
-              {product.price?.toLocaleString() || "No price available"} VNĐ
+              {new Intl.NumberFormat("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })
+                .format(product.price ?? 0)
+                .replace("₫", "VNĐ")}
             </div>
             <div>
               {Array.isArray(product.description) && (
                 <PortableText value={product.description} />
               )}
             </div>
+          </div>
+          <div>
+            <AddToBasketButton product={product} disabled={isOutOfStock} />
           </div>
         </div>
       </div>
