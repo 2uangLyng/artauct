@@ -58,7 +58,8 @@ export async function createCheckoutSession(
             items: items.map(item => ({
                 name: item.product.name || "Unnamed Product",
                 quantity: item.quantity,
-                price: Math.round(item.product.price! * 100),  // PayOS có thể yêu cầu giá trị theo đơn vị nhỏ nhất (ví dụ: VND)
+                price: item.product.price!,
+                // price: Math.round(item.product.price! * 100),  // PayOS có thể yêu cầu giá trị theo đơn vị nhỏ nhất (ví dụ: VND)
             })),
             buyerName: metadata.customerName,
             buyerEmail: customerEmail,
@@ -67,7 +68,7 @@ export async function createCheckoutSession(
         console.log('Checkout Request:', checkoutRequest);
 
         const session = await payos.createPaymentLink(checkoutRequest);
-
+        
         return session.checkoutUrl;
     } catch (error) {
         console.error(">>> Error: ", error);

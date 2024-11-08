@@ -453,20 +453,6 @@
         },
         "optional": true
       },
-      "stripeCheckoutSessionId": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
-      "stripeCustomerId": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
       "clerkUserId": {
         "type": "objectAttribute",
         "value": {
@@ -482,13 +468,6 @@
         "optional": true
       },
       "email": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
-      "stripePaymentIntentId": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
