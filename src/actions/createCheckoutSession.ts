@@ -3,6 +3,7 @@
 import { BasketItem } from "@/store/store";
 import payos from "@/lib/payOS";
 import { CheckoutRequestType } from "@payos/node/lib/type";
+import { backendClient } from "@/sanity/lib/backendClient";
 
 export type Metadata = {
     orderNumber: string;
@@ -68,7 +69,11 @@ export async function createCheckoutSession(
         console.log('Checkout Request:', checkoutRequest);
 
         const session = await payos.createPaymentLink(checkoutRequest);
-        
+        console.log('Checkout Response:', session);
+        // const res = await payos.verifyPaymentWebhookData()
+        if (session.status == 'PENDING') {
+            await saveOrderToSanity(session, items, metadata);
+        }
         return session.checkoutUrl;
     } catch (error) {
         console.error(">>> Error: ", error);
@@ -76,3 +81,34 @@ export async function createCheckoutSession(
     }
 
 }
+
+async function saveOrderToSanity(session: any, items: GroupedBasketItem[], metadata: Metadata) {
+    try {
+        // Tạo đơn hàng trong Sanity
+        const order = await backendClient.create({
+            _type: "order",
+            orderNumber: session.orderCode.toString(),
+            customerName: metadata.customerName,
+            clerkUserId: metadata.clerkUserId,
+            email: metadata.customerEmail,
+            product: items.map(item => ({
+                _key: crypto.randomUUID(),
+                product: {
+                    _type: "reference",
+                    _ref: item.product._id, // Lưu ID sản phẩm từ hệ thống của bạn
+                },
+                quantity: item.quantity,
+            })),
+            totalPrice: session.amount,
+            currency: session.currency,
+            amountDiscount: 0,
+            status: "paid",
+            orderDate: new Date().toISOString(),
+        });
+
+        console.log("Order saved:", order);
+    } catch (error) {
+        console.error("Error saving order to Sanity:", error);
+    }
+}
+
